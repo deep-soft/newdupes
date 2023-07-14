@@ -52,6 +52,7 @@ UNAME_S=$(shell uname -s)
 ifeq ($(OS), Windows_NT)
  ifndef NO_WINDOWS
   ON_WINDOWS=1
+  CFLAGS += -DNO_PERMS
  endif
 endif
 
