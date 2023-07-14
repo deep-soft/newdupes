@@ -21,6 +21,7 @@
 const char *jc_build_version = LIBJODYCODE_VER;
 const int jc_build_api_version = LIBJODYCODE_API_VERSION;
 const int jc_build_api_featurelevel = LIBJODYCODE_API_FEATURE_LEVEL;
+const int jc_build_windows_unicode = LIBJODYCODE_WINDOWS_UNICODE;
 
 const int jc_build_min_featurelevel = MY_FEATURELEVEL_REQ;
 
@@ -136,8 +137,12 @@ incompatible_versiontable:
 				jc_version, jc_api_version, jc_api_featurelevel);
 		fprintf(stderr, "  Built against libjodycode v%s, API %d, feature level %d\n\n",
 				jc_build_version, jc_build_api_version, jc_build_api_featurelevel);
+		if (jc_windows_unicode != jc_build_windows_unicode)
+			fprintf(stderr, "libjodycode was built with%s Windows Unicode but %sUnicode is required.\n\n",
+					jc_windows_unicode == 1 ? "" : "out",
+					jc_build_windows_unicode == 1 ? "" : "non-");
 		if (jc_build_min_featurelevel > jc_build_api_featurelevel)
-			fprintf(stderr, "libjodycode feature level %d is required but linked library is level %d\n",
+			fprintf(stderr, "libjodycode feature level %d is required but linked library is level %d\n\n",
 				jc_build_min_featurelevel, jc_build_api_featurelevel);
 		if (lib[i] == 0) fprintf(stderr, "API sections are missing in libjodycode; it's probably too old.\n");
 		else fprintf(stderr, "The first incompatible API section found is '%s' (want v%d, got v%d).\n",

@@ -14,7 +14,7 @@
  * applications that don't care about the number of alarms or that work
  * properly without that info, level 1 minimum is fine; those that rely
  * on the newer behavior must specify a minimum level of 2. */
-#define MY_FEATURELEVEL_REQ 1
+#define MY_FEATURELEVEL_REQ 2
 
 /* API sub-version requirements
  * For any libjodycode API you use, copy its number from libjodycode.h to
@@ -22,15 +22,15 @@
  * To indicate you don't use an API, set it to 0.
  * To auto-fill the API numbers you're building against, set it to 255.
  * Any number not matching libjodycode will cause an error exit. */
-#define MY_CACHEINFO_REQ   255
-#define MY_JODY_HASH_REQ   255
-#define MY_OOM_REQ         255
-#define MY_PATHS_REQ       255
-#define MY_SIZE_SUFFIX_REQ 255
-#define MY_SORT_REQ        255
-#define MY_STRING_REQ      255
-#define MY_STRTOEPOCH_REQ  255
-#define MY_WIN_STAT_REQ    255
-#define MY_WIN_UNICODE_REQ 255
-#define MY_ERROR_REQ       255
-#define MY_ALARM_REQ       255
+#define MY_CACHEINFO_REQ   0
+#define MY_JODY_HASH_REQ   0
+#define MY_OOM_REQ         0
+#define MY_PATHS_REQ       0
+#define MY_SIZE_SUFFIX_REQ 0
+#define MY_SORT_REQ        0
+#define MY_STRING_REQ      0
+#define MY_STRTOEPOCH_REQ  0
+#define MY_WIN_STAT_REQ    0
+#define MY_WIN_UNICODE_REQ 2
+#define MY_ERROR_REQ       0
+#define MY_ALARM_REQ       0
