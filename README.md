@@ -14,8 +14,10 @@ https://www.jodybruchon.com/
 
 Rewrite
 -------------------------------------------------------------------------------
-This is a rewrite from scratch. It can currently be found at:
+This is a rewrite from scratch. All jdupes code has been tossed out and will
+be rebuilt from the ground up with a much better underlying architecture and
+far better performance on modern hardware. Code repository is currently at:
 
 https://github.com/jbruchon/newdupes
 
-It is not considered ready for use, nor safe in any way. Do not use it.
+This code is not considered ready for use, nor safe in any way.
