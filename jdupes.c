@@ -19,11 +19,16 @@
 	 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 	 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
+#include <dirent.h>
+#include <errno.h>
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include <libjodycode.h>
 #include "libjodycode_check.h"
@@ -32,6 +37,10 @@
 #include "jdupes.h"
 #include "version.h"
 
+
+/* File list head */
+file_t *filelist_head = NULL;
+file_t *filelist_tail = NULL;
 
 /* Program-wide behavior flags */
 uint64_t flags;
@@ -44,7 +53,39 @@ int exit_status = EXIT_SUCCESS;
 
 /***** End definitions, begin code *****/
 
+
 /***** Add new functions here *****/
+
+
+file_t *load_item(file_t *file, char *item, int user_order)
+{
+	DIR *d;
+	struct stat s;
+
+//	fprintf(stderr, "load_item(\"%s\")\n", item);
+	errno = 0;
+	if (lstat(item, &s) != 0) goto error_lstat;
+	if (S_ISDIR(s.st_mode)) {
+		fprintf(stderr, "Is a directory: '%s'\n", item);
+		file->type = FT_DIRECTORY;
+	} else if (S_ISREG(s.st_mode)) {
+		fprintf(stderr, "Is a regular file: '%s'\n", item);
+		file->type = FT_REGULAR;
+	} else if (S_ISLNK(s.st_mode)) {
+		fprintf(stderr, "Is a symbolic link: '%s'\n", item);
+		file->type = FT_SYMLINK;
+	} else {
+		fprintf(stderr, "File type not handled: '%s'\n", item);
+		return NULL;
+	}
+	/* TODO: copy file info into file_t */
+	
+	return file;
+
+error_lstat:
+	fprintf(stderr, "error: stat failed on '%s': %s\n", item, strerror(errno));
+	return NULL;
+}
 
 
 #ifdef UNICODE
@@ -53,7 +94,6 @@ int wmain(int argc, wchar_t **wargv)
 int main(int argc, char **argv)
 #endif
 {
-
 	/* Verify libjodycode compatibility before going further */
 	if (libjodycode_version_check(1, 0) != 0) exit(EXIT_FAILURE);
 
@@ -87,11 +127,18 @@ int main(int argc, char **argv)
 #endif
 
 	program_name = argv[0];
-
 	if (argc == 1) goto show_help;
-	/* Scan duplicates here */
+	filelist_head = (file_t *)calloc(1, sizeof(file_t));
+	if (filelist_head == NULL) jc_oom("filelist_head");
+	filelist_tail = filelist_head;
+
+	/* Create a list of items to be processed  */
 	for (int i = 1; i < argc; i++) {
-		printf("file: %s\n", argv[i]);
+		file_t *filelist_new;
+//		fprintf(stderr, "param: %s\n", argv[i]);
+		filelist_new = load_item(filelist_tail, argv[i], i);
+		if (filelist_new == NULL) continue;
+		filelist_tail = filelist_new;
 	}
 
 	exit(exit_status);
