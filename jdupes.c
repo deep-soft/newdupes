@@ -42,6 +42,9 @@
 file_t *filelist_head = NULL;
 file_t *filelist_tail = NULL;
 
+/* Inode tree root */
+inode_t *inodetree_root = NULL;
+
 /* Program-wide behavior flags */
 uint64_t flags;
 
@@ -57,12 +60,30 @@ int exit_status = EXIT_SUCCESS;
 /***** Add new functions here *****/
 
 
+char *store_path(char *file)
+{
+	if (unlikely(file == NULL)) jc_nullptr("store_path");
+	fprintf(stderr, "store_path(\"%s\")\n", file);
+	return (char *)malloc(strlen(file));
+}
+
+
+inode_t *get_inode(char *file, ino_t st_ino)
+{
+	if (unlikely(file == NULL)) jc_nullptr("get_inode");
+	fprintf(stderr, "get_inode(\"%s\")\n", file);
+	return (inode_t *)malloc(sizeof(inode_t));
+}
+
+
 file_t *load_item(file_t *file, char *item, int user_order)
 {
 	DIR *d;
 	struct stat s;
 
-//	fprintf(stderr, "load_item(\"%s\")\n", item);
+	if (unlikely(file == NULL || item == NULL)) jc_nullptr("load_item");
+
+	fprintf(stderr, "load_item(\"%s\", %d)\n", item, user_order);
 	errno = 0;
 	if (lstat(item, &s) != 0) goto error_lstat;
 	if (S_ISDIR(s.st_mode)) {
@@ -78,8 +99,12 @@ file_t *load_item(file_t *file, char *item, int user_order)
 		fprintf(stderr, "File type not handled: '%s'\n", item);
 		return NULL;
 	}
-	/* TODO: copy file info into file_t */
-	
+
+	file->inode = get_inode(item, s.st_ino);
+	if (file->inode == NULL) jc_oom("load_item:file->inode");
+	file->d_name = store_path(item);
+	if (file->d_name == NULL) jc_oom("load_item:file->d_name");
+
 	return file;
 
 error_lstat:

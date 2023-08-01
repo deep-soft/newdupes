@@ -22,6 +22,7 @@ extern "C" {
 
 #include <limits.h>
 #include <stdint.h>
+#include <inttypes.h>
 #include <sys/types.h>
 
 /* Some types are different on Windows */
@@ -155,6 +156,7 @@ typedef struct _file {
 	struct _file *next;
 	char *d_name;
 	inode_t *inode;
+	uint_fast16_t name_length;
 	int type;
 #ifndef NO_USER_ORDER
 	uint32_t user_order; /* Order of the originating command-line parameter */
